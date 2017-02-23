@@ -14,9 +14,15 @@ document.addEventListener("DOMContentLoaded", function() {
         console.dir(nodeList)
         console.dir(titleList)
         console.dir(urlList)
-        titleList.forEach(function(t) {
+        nodeList.forEach(function(node) {
             var li = document.createElement("li");
-            li.innerHTML = t;
+            li.innerHTML = "<li><a href='" + node.url + "'>" + node.title + "</a></li>";
+            li.onclick = function() {
+                chrome.tabs.create({
+                    url: node.url
+                });
+            };
+
             ul.appendChild(li);
         });
 
