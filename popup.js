@@ -49,4 +49,26 @@ document.addEventListener("DOMContentLoaded", function() {
         return ret;
     }
 
+    var search = document.getElementById("search");
+    var lis = document.getElementsByTagName("li");
+    var i;
+    var a;
+    var input;
+
+    search.onkeyup = function() {
+        console.log("msg");
+        input = search.value.toLowerCase();
+
+        for (i = 0; i < lis.length; i++) {
+            var li = lis[i];
+            var a = li.getElementsByTagName("a")[0];
+            if (a.innerHTML.toLowerCase().indexOf(input) > -1) {
+                li.style.display = "";
+            } else {
+                li.style.display = "none";
+            }
+        }
+    }
+
+
 });
