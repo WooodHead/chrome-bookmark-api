@@ -1,74 +1,39 @@
 document.addEventListener("DOMContentLoaded", function() {
-    var el = document.getElementById("bookmarks");
-    var ul = document.createElement("ul");
-    var tree;
-    var rootNode;
 
-    chrome.bookmarks.getTree(function(t) {
-        tree = t;
-        rootNode = tree[0];
-        var nodeList = getList(rootNode);
-        var titleList = getList(rootNode, "title");
-        var urlList = getList(rootNode, "url");
+    chrome.bookmarks.getTree(function(tree) {
 
-        console.dir(nodeList)
-        console.dir(titleList)
-        console.dir(urlList)
-        nodeList.forEach(function(node) {
-            var li = document.createElement("li");
-            li.innerHTML = "<li><a href='" + node.url + "'>" + node.title + "</a></li>";
-            li.onclick = function() {
-                chrome.tabs.create({
-                    url: node.url
-                });
-            };
-
-            ul.appendChild(li);
-        });
-
-        el.append(ul);
+        var rootNode = tree[0];
+        sortFolder(rootNode);
     });
 
-    function getList(node, prop) {
-        var children = node.children;
-        var ret = [];
-        var tmp;
-        if (prop) {
-            ret.push(node[prop]);
-        } else {
-            ret.push(node);
-        }
-
-        if (children) {
-            children.forEach(function(c) {
-                tmp = getList(c, prop);
-                ret = ret.concat(tmp);
-            });
-        }
-
-        return ret;
-    }
-
-    var search = document.getElementById("search");
-    var lis = document.getElementsByTagName("li");
-    var i;
-    var a;
-    var input;
-
-    search.onkeyup = function() {
-        console.log("msg");
-        input = search.value.toLowerCase();
-
-        for (i = 0; i < lis.length; i++) {
-            var li = lis[i];
-            var a = li.getElementsByTagName("a")[0];
-            if (a.innerHTML.toLowerCase().indexOf(input) > -1) {
-                li.style.display = "";
-            } else {
-                li.style.display = "none";
-            }
-        }
-    }
-
-
 });
+
+
+
+function sortFolder(parent) {
+    var children = parent.children;
+
+    if (children) {
+        children = children.sort(function(a, b) {
+            var atitle = a.title;
+            var btitle = b.title;
+            if (atitle < btitle) {
+                return 1;
+            }
+            if (atitle > btitle) {
+                return -1;
+            }
+
+            return 0;
+        });
+
+        children.forEach(function(ch, index) {
+            ch.index = index;
+        });
+        children.forEach(function(c) {
+            sortFolder(c);
+        });
+
+
+    }
+}
